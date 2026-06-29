@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Weekly Pulse · Jun 23–29</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy: #0D1B2A;
+    --navy2: #132033;
+    --amber: #F4A225;
+    --amber2: #FFB84D;
+    --white: #FFFFFF;
+    --slate: #8B9AB0;
+    --card: #14243A;
+    --border: rgba(255,255,255,0.08);
+    --au: #00B4A6; --ca: #E83D3D; --de: #F9D342; --uk: #9B5DE5; --us: #3D9BE8;
+  }
+
+  html, body { height: 100%; }
+
+  body {
+    background: var(--navy);
+    color: var(--white);
+    font-family: 'Inter', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow: hidden;
+  }
+
+  /* ── SLIDE WRAPPER ── */
+  .deck {
+    width: 100%;
+    max-width: 860px;
+    height: 100vh;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    padding: 48px 52px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    opacity: 0;
+    transform: translateX(60px);
+    transition: opacity 0.38s ease, transform 0.38s ease;
+    pointer-events: none;
+  }
+  .slide.active {
+    opacity: 1;
+    transform: none;
+    pointer-events: all;
+  }
+  .slide.exit-left {
+    opacity: 0;
+    transform: translateX(-60px);
+  }
+
+  /* ── COMMON TEXT ── */
+  .eyebrow {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 14px;
+  }
+  h1, h2 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+  h1 { font-size: clamp(30px, 5vw, 52px); margin-bottom: 16px; }
+  h2 { font-size: clamp(22px, 3.5vw, 36px); margin-bottom: 20px; }
+  .gold { background: linear-gradient(90deg, var(--amber), var(--amber2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .sub { color: var(--slate); font-size: 15px; line-height: 1.7; }
+
+  /* ── SLIDE 1: COVER ── */
+  #s1 { text-align: center; align-items: center; }
+  #s1::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(244,162,37,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: rgba(244,162,37,0.15);
+    border: 1px solid rgba(244,162,37,0.3);
+    color: var(--amber);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 12px; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 6px 18px; border-radius: 999px;
+    margin-bottom: 28px;
+  }
+  .flags { display: flex; gap: 12px; margin-top: 28px; justify-content: center; }
+  .flag { font-size: 26px; width: 48px; height: 48px; border-radius: 50%; background: rgba(255,255,255,0.07); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; }
+
+  /* ── SLIDE 2: STATS ── */
+  .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 4px; }
+  .stat {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px 20px;
+    text-align: center;
+    transition: border-color 0.2s;
+  }
+  .stat:hover { border-color: rgba(244,162,37,0.3); }
+  .stat-n { font-family: 'Space Grotesk', sans-serif; font-size: 32px; font-weight: 800; color: var(--amber); display: block; }
+  .stat-l { font-size: 11px; color: var(--slate); text-transform: uppercase; letter-spacing: 0.07em; margin-top: 4px; display: block; }
+
+  /* ── SLIDE 3: HIGHLIGHTS ── */
+  .hl-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .hl {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px 18px;
+    display: flex; gap: 12px; align-items: flex-start;
+  }
+  .hl-icon { font-size: 22px; min-width: 28px; }
+  .hl strong { font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 700; display: block; margin-bottom: 4px; }
+  .hl p { font-size: 12.5px; color: var(--slate); line-height: 1.5; }
+
+  /* ── SLIDE 4: TIMELINE ── */
+  .tl { display: flex; flex-direction: column; gap: 12px; }
+  .tl-row { display: flex; align-items: flex-start; gap: 14px; }
+  .tl-dot {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--amber); color: var(--navy);
+    font-size: 11px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; font-family: 'Space Grotesk', sans-serif;
+  }
+  .tl-info strong { font-family: 'Space Grotesk', sans-serif; font-size: 13px; color: var(--amber); display: block; margin-bottom: 2px; }
+  .tl-info p { font-size: 13px; color: #CBD5E8; line-height: 1.5; }
+
+  /* ── COUNTRY SLIDES ── */
+  .country-header { display: flex; align-items: center; gap: 12px; margin-bottom: 22px; }
+  .cflag { font-size: 40px; }
+  .cname { font-family: 'Space Grotesk', sans-serif; font-size: 28px; font-weight: 800; letter-spacing: -0.01em; }
+  .cmsg { font-size: 12px; font-weight: 700; padding: 4px 14px; border-radius: 999px; margin-left: auto; font-family: 'Space Grotesk', sans-serif; }
+  .c-au .cmsg { background: rgba(0,180,166,0.15); color: var(--au); }
+  .c-ca .cmsg { background: rgba(232,61,61,0.15); color: var(--ca); }
+  .c-de .cmsg { background: rgba(249,211,66,0.12); color: var(--de); }
+  .c-uk .cmsg { background: rgba(155,93,229,0.15); color: var(--uk); }
+  .c-us .cmsg { background: rgba(61,155,232,0.15); color: var(--us); }
+
+  .bar-wrap { margin-bottom: 22px; }
+  .bar-label { font-size: 11px; color: var(--slate); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+  .bar-track { height: 6px; background: rgba(255,255,255,0.07); border-radius: 999px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 999px; }
+  .c-au .bar-fill { background: linear-gradient(90deg, var(--au), #00D4C8); width: 1%; }
+  .c-ca .bar-fill { background: linear-gradient(90deg, var(--ca), #FF6B6B); width: 52%; }
+  .c-de .bar-fill { background: linear-gradient(90deg, var(--de), #FFE566); width: 100%; }
+  .c-uk .bar-fill { background: linear-gradient(90deg, var(--uk), #C084F5); width: 30%; }
+  .c-us .bar-fill { background: linear-gradient(90deg, var(--us), #74C0FC); width: 15%; }
+
+  .bullets { list-style: none; display: flex; flex-direction: column; gap: 9px; }
+  .bullets li { font-size: 13.5px; color: #CBD5E8; padding-left: 18px; position: relative; line-height: 1.5; }
+  .bullets li::before { content: '›'; position: absolute; left: 0; font-size: 16px; font-weight: 700; line-height: 1.3; }
+  .c-au .bullets li::before { color: var(--au); }
+  .c-ca .bullets li::before { color: var(--ca); }
+  .c-de .bullets li::before { color: var(--de); }
+  .c-uk .bullets li::before { color: var(--uk); }
+  .c-us .bullets li::before { color: var(--us); }
+  .bullets li em { font-style: normal; font-weight: 600; color: var(--white); }
+
+  /* ── ALERT / DEADLINE SLIDE ── */
+  .alert-box {
+    background: rgba(244,162,37,0.08);
+    border: 1px solid rgba(244,162,37,0.35);
+    border-radius: 18px;
+    padding: 28px 30px;
+    display: flex; gap: 20px; align-items: flex-start;
+    margin-top: 10px;
+  }
+  .alert-icon { font-size: 36px; }
+  .alert-box strong { font-family: 'Space Grotesk', sans-serif; font-size: 20px; font-weight: 800; color: var(--amber); display: block; margin-bottom: 10px; }
+  .alert-box p { font-size: 14px; color: #CBD5E8; line-height: 1.7; }
+
+  /* ── NAV ── */
+  .nav {
+    position: fixed;
+    bottom: 28px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: rgba(13,27,42,0.9);
+    border: 1px solid var(--border);
+    backdrop-filter: blur(12px);
+    border-radius: 999px;
+    padding: 10px 20px;
+    z-index: 100;
+  }
+  .nav-btn {
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--white);
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  .nav-btn:hover { background: rgba(244,162,37,0.2); border-color: var(--amber); }
+  .nav-btn:disabled { opacity: 0.3; cursor: default; }
+  .nav-counter { font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 700; color: var(--slate); min-width: 48px; text-align: center; }
+  .dots { display: flex; gap: 6px; }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--border); border: 1px solid rgba(255,255,255,0.15); transition: background 0.2s, transform 0.2s; cursor: pointer; }
+  .dot.active { background: var(--amber); transform: scale(1.35); }
+
+  @media (max-width: 600px) {
+    .slide { padding: 32px 24px; }
+    .stats-grid { grid-template-columns: 1fr 1fr; }
+    .hl-grid { grid-template-columns: 1fr; }
+    h1 { font-size: 28px; }
+    h2 { font-size: 22px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="deck">
+
+  <!-- SLIDE 1: COVER -->
+  <div class="slide active" id="s1">
+    <div class="badge">📅 Jun 23 – 29, 2026</div>
+    <h1>Amber Global<br>Aspirants<br><span class="gold">Weekly Pulse</span></h1>
+    <p class="sub">5 country groups · post-webinar week · offer letters dropped, questions flew.</p>
+    <div class="flags">
+      <div class="flag">🇦🇺</div>
+      <div class="flag">🇨🇦</div>
+      <div class="flag">🇩🇪</div>
+      <div class="flag">🇬🇧</div>
+      <div class="flag">🇺🇸</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 2: STATS -->
+  <div class="slide" id="s2">
+    <div class="eyebrow">By the numbers</div>
+    <h2>This Week at a Glance</h2>
+    <div class="stats-grid">
+      <div class="stat"><span class="stat-n">5</span><span class="stat-l">Groups Active</span></div>
+      <div class="stat"><span class="stat-n">223</span><span class="stat-l">Peak Messages 🇩🇪</span></div>
+      <div class="stat"><span class="stat-n">Jun 26</span><span class="stat-l">Offer Letter Day 🎉</span></div>
+      <div class="stat"><span class="stat-n">31 Aug</span><span class="stat-l">Scholarship Deadline</span></div>
+      <div class="stat"><span class="stat-n">#1</span><span class="stat-l">Topic: Uni + Loans</span></div>
+      <div class="stat"><span class="stat-n">10+</span><span class="stat-l">UK Flatmates Signal</span></div>
+    </div>
+  </div>
+
+  <!-- SLIDE 3: BIG HIGHLIGHTS -->
+  <div class="slide" id="s3">
+    <div class="eyebrow">Overview</div>
+    <h2>What Happened This Week 👀</h2>
+    <div class="hl-grid">
+      <div class="hl"><div class="hl-icon">🎉</div><div><strong>Offer Letter Flood — Jun 26</strong><p>Admin triggered "Big Moment Alert" across all 5 groups. UK exploded with 10+ universities in minutes.</p></div></div>
+      <div class="hl"><div class="hl-icon">🇩🇪</div><div><strong>Germany Woke Up</strong><p>223 msgs — study loans, block accounts, Studienkolleg debate. Most detailed convo the community's had.</p></div></div>
+      <div class="hl"><div class="hl-icon">🏦</div><div><strong>Study Loan Deep Dive</strong><p>Mukesh (Credilla, 11.9%) vs Vishal (SBI secured) vs Aditi (no co-applicant). Expert-level thread.</p></div></div>
+      <div class="hl"><div class="hl-icon">🇨🇦</div><div><strong>Canada: UofT Guidance</strong><p>Aditi shared UofT scholarship link. $1k deposit confusion, IELTS requirement clarified by community.</p></div></div>
+      <div class="hl"><div class="hl-icon">🇬🇧</div><div><strong>UK Sep Intake Group Forming</strong><p>A member started a flatmate/buddy group — 10+ people raised hands within minutes.</p></div></div>
+      <div class="hl"><div class="hl-icon">📅</div><div><strong>Scholarship Deadline Confirmed</strong><p>Admin Rajratna confirmed Amber Scholarship results on <strong>31st August</strong> — first time made explicit.</p></div></div>
+    </div>
+  </div>
+
+  <!-- SLIDE 4: TIMELINE -->
+  <div class="slide" id="s4">
+    <div class="eyebrow">Day by Day</div>
+    <h2>Week Timeline ⏱</h2>
+    <div class="tl">
+      <div class="tl-row"><div class="tl-dot">23</div><div class="tl-info"><strong>Jun 23</strong><p>LiiCoda shares $27k Canada scholarship in UK · USA: Neha drops detailed scholarship profile</p></div></div>
+      <div class="tl-row"><div class="tl-dot">24</div><div class="tl-info"><strong>Jun 24</strong><p>Canada erupts — U of Toronto guidance, IELTS deposit confusion, OCAD mention</p></div></div>
+      <div class="tl-row"><div class="tl-dot">25</div><div class="tl-info"><strong>Jun 25</strong><p>USA: Varsha (Boston intl student) joins · "Is masters in US worth it?" debate kicks off</p></div></div>
+      <div class="tl-row"><div class="tl-dot">26</div><div class="tl-info"><strong>Jun 26</strong><p>🎉 Offer letter moment across ALL groups · UK Sep intake group forming · Germany uni list drops</p></div></div>
+      <div class="tl-row"><div class="tl-dot">27</div><div class="tl-info"><strong>Jun 27</strong><p>Amber deadline (31 Aug) confirmed · Germany: Studienkolleg vs 1st yr India debate · non-DAAD scholarships asked</p></div></div>
+      <div class="tl-row"><div class="tl-dot">28</div><div class="tl-info"><strong>Jun 28</strong><p>Block account explained · study loan deep dive (Credilla vs SBI) · Jennifer E gets Northeastern Boston offer! 🎉</p></div></div>
+      <div class="tl-row"><div class="tl-dot">29</div><div class="tl-info"><strong>Jun 29</strong><p>New members batch-added across all groups · Aditi gives application guidance in Canada</p></div></div>
+    </div>
+  </div>
+
+  <!-- SLIDE 5: AUSTRALIA -->
+  <div class="slide c-au" id="s5">
+    <div class="eyebrow">Country Breakdown 1/5</div>
+    <div class="country-header">
+      <span class="cflag">🇦🇺</span>
+      <span class="cname">Australia</span>
+      <span class="cmsg">~3 messages</span>
+    </div>
+    <div class="bar-wrap">
+      <div class="bar-label">Activity vs Germany</div>
+      <div class="bar-track"><div class="bar-fill"></div></div>
+    </div>
+    <ul class="bullets">
+      <li><em>Ghost town</em> — second week in a row completely silent.</li>
+      <li>Admin posted the offer letter prompt on <em>Jun 26</em> — zero responses from members.</li>
+      <li>Only one member spoke: <em>Chaudhry Mishayyy</em> asking about UNSW Sydney for bachelor's — no replies.</li>
+      <li>No university discussions, no scholarship talk, no peer conversations.</li>
+      <li>Purely an <em>admin broadcast channel</em> this week.</li>
+    </ul>
+  </div>
+
+  <!-- SLIDE 6: CANADA -->
+  <div class="slide c-ca" id="s6">
+    <div class="eyebrow">Country Breakdown 2/5</div>
+    <div class="country-header">
+      <span class="cflag">🇨🇦</span>
+      <span class="cname">Canada</span>
+      <span class="cmsg">~117 messages 🔥</span>
+    </div>
+    <div class="bar-wrap">
+      <div class="bar-label">Activity vs Germany</div>
+      <div class="bar-track"><div class="bar-fill"></div></div>
+    </div>
+    <ul class="bullets">
+      <li><em>Jun 24 was the peak</em> — Aditi shared UofT link, sparking a full-blown admissions convo.</li>
+      <li>Key confusion cleared: <em>admission first, then scholarship</em>. IELTS also required — Aditi clarified.</li>
+      <li><em>Viclusive</em> broke down the $1k UofT deposit debate with an audio clip. Members reacted with shock.</li>
+      <li><em>KING ADEDOLAPO</em> shared he submitted to the IRCC portal — first concrete visa progress this week.</li>
+      <li>Admin dropped <em>amberstudent.com/scholarship</em> after repeated member requests. Deadline: <em>31st August</em>.</li>
+      <li><em>McCall MacBain Scholarship</em> criteria asked by Chinenye — awareness is growing.</li>
+    </ul>
+  </div>
+
+  <!-- SLIDE 7: GERMANY -->
+  <div class="slide c-de" id="s7">
+    <div class="eyebrow">Country Breakdown 3/5</div>
+    <div class="country-header">
+      <span class="cflag">🇩🇪</span>
+      <span class="cname">Germany</span>
+      <span class="cmsg">223 messages 🔥🔥</span>
+    </div>
+    <div class="bar-wrap">
+      <div class="bar-label">Activity vs Germany</div>
+      <div class="bar-track"><div class="bar-fill"></div></div>
+    </div>
+    <ul class="bullets">
+      <li><em>Most active group</em> — complete reversal from last week. Turned into a real community.</li>
+      <li>Offer letters shared: <em>TU Dortmund, Saarland, Tübingen, Constructor, Berlin IU, Hochschule Fresenius</em> and more.</li>
+      <li>Big debate: <em>Studienkolleg vs direct bachelor's vs 1st year India</em> — Vishal, Karthik, Aditi went deep.</li>
+      <li>Study loan thread: <em>Mukesh</em> (Credilla, 11.9%, non-collateral ₹15L) vs Aditi (no co-applicant, stuck).</li>
+      <li>Block account explained by Mukesh: <em>€12k (~₹13.5L) required, €992/month</em> disbursement. Best knowledge drop.</li>
+      <li>Language settled: <em>private uni = IELTS, public uni = German, Ausbildung = higher German</em> required.</li>
+    </ul>
+  </div>
+
+  <!-- SLIDE 8: UK -->
+  <div class="slide c-uk" id="s8">
+    <div class="eyebrow">Country Breakdown 4/5</div>
+    <div class="country-header">
+      <span class="cflag">🇬🇧</span>
+      <span class="cname">UK</span>
+      <span class="cmsg">~69 messages</span>
+    </div>
+    <div class="bar-wrap">
+      <div class="bar-label">Activity vs Germany</div>
+      <div class="bar-track"><div class="bar-fill"></div></div>
+    </div>
+    <ul class="bullets">
+      <li>Quieter than last week but real conversations — driven by offer letters and intake planning.</li>
+      <li><em>LiiCoda</em> shared a $27k Canada Graduate Research Scholarship (Dec 1 deadline) — first organic member-shared resource.</li>
+      <li>Offer letters: <em>Rk</em> (Birmingham, Aberdeen, Southampton, Cardiff Met — chose Birmingham). Allan: Leeds, Sheffield, SOAS, East Anglia.</li>
+      <li><em>September intake sub-group forming</em> — member offered to create flatmate/buddy group. 10+ hands in minutes.</li>
+      <li><em>Ameyak</em> looking for NTU MSc Finance & Accounting Sep intake people.</li>
+      <li><em>Syeda Hira</em> asked if anyone got admission through AmberScholar — no clear answer. Gap worth addressing.</li>
+    </ul>
+  </div>
+
+  <!-- SLIDE 9: USA -->
+  <div class="slide c-us" id="s9">
+    <div class="eyebrow">Country Breakdown 5/5</div>
+    <div class="country-header">
+      <span class="cflag">🇺🇸</span>
+      <span class="cname">USA</span>
+      <span class="cmsg">~34 messages</span>
+    </div>
+    <div class="bar-wrap">
+      <div class="bar-label">Activity vs Germany</div>
+      <div class="bar-track"><div class="bar-fill"></div></div>
+    </div>
+    <ul class="bullets">
+      <li><em>Neha Shailender</em> dropped the most polished profile so far: CGPA 3.8, first-author research, Psi Chi, Dean's List, multiple offers — asking for PsyD scholarship matches.</li>
+      <li><em>Vamsi</em> asked "is masters in US still worth it?" — <em>Humaima</em> said yes. Varsha (Boston freshman) joined, asked about external scholarships.</li>
+      <li><em>Nuella</em> asked about US visa dates in Ghana for fall 2026 — no answer came, real pain point.</li>
+      <li><em>Aanchal</em> introduced herself — 12th passout, 92%, commerce, wants bachelor's scholarship.</li>
+      <li>🎉 <em>Jennifer E</em> got her offer from <em>Northeastern Boston</em> — first confirmed US offer in the group.</li>
+      <li><em>Harshu</em> (12th, fashion design) applied for the Amber New York scholarship — great energy new member.</li>
+    </ul>
+  </div>
+
+  <!-- SLIDE 10: WRAP UP -->
+  <div class="slide" id="s10">
+    <div class="eyebrow">That's a wrap</div>
+    <h2>Key Takeaways 🎯</h2>
+    <div class="alert-box">
+      <div class="alert-icon">📢</div>
+      <div>
+        <strong>Scholarship Deadline: 31st August 2026</strong>
+        <p>Admin confirmed across groups. Close to fall intake start dates — documents should be ready well in advance.</p>
+        <p style="margin-top:10px; color: var(--slate);">Germany dominated this week's activity. Australia needs a community intervention. Canada and UK had quality peer exchanges. USA is growing steadily with strong new member profiles.</p>
+        <p style="margin-top:10px; color: var(--amber); font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 700;">Next step: Address unanswered questions — McCall MacBain, Ghana visa dates, AmberScholar success stories.</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- NAV -->
+<div class="nav">
+  <button class="nav-btn" id="prevBtn" onclick="go(-1)" disabled>←</button>
+  <div class="dots" id="dots"></div>
+  <span class="nav-counter" id="counter">1 / 10</span>
+  <button class="nav-btn" id="nextBtn" onclick="go(1)">→</button>
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  let cur = 0;
+
+  const dotsEl = document.getElementById('dots');
+  const counter = document.getElementById('counter');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+
+  // build dots
+  slides.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    d.onclick = () => goTo(i);
+    dotsEl.appendChild(d);
+  });
+
+  function go(dir) { goTo(cur + dir); }
+
+  function goTo(n) {
+    if (n < 0 || n >= total) return;
+    slides[cur].classList.remove('active');
+    slides[cur].classList.add('exit-left');
+    setTimeout(() => slides[cur === undefined ? n : cur].classList.remove('exit-left'), 400);
+    cur = n;
+    slides[cur].classList.add('active');
+    dotsEl.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === cur));
+    counter.textContent = `${cur + 1} / ${total}`;
+    prevBtn.disabled = cur === 0;
+    nextBtn.disabled = cur === total - 1;
+  }
+
+  // keyboard
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') go(1);
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') go(-1);
+  });
+
+  // touch swipe
+  let tx = null;
+  document.addEventListener('touchstart', e => tx = e.touches[0].clientX);
+  document.addEventListener('touchend', e => {
+    if (tx === null) return;
+    const diff = tx - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 50) go(diff > 0 ? 1 : -1);
+    tx = null;
+  });
+</script>
+</body>
+</html>
